@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Button, Card, Col, Form, FormGroup, Row } from "react-bootstrap";
 import { useState } from "react";
 
@@ -9,6 +9,8 @@ const Login = () => {
         email: false,
         password: false,
     });
+    const emailRef = useRef(null);
+    const passwordRef = useRef(null);
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -22,6 +24,18 @@ const Login = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        if (!emailRef.current.value.length) {
+            setErrors({ ...errors, email: true });
+            alert("El email es requerido");
+            emailRef.current.focus();
+            return;
+        }
+        if (!password || password.length < 7) {
+            setErrors({ ...errors, password: true });
+            passwordRef.current.focus();
+            return;
+        }
+
         alert(`El email ingresado es: ${email} y el password es ${password}`);
         setEmail("");
         setPassword("");
@@ -29,7 +43,7 @@ const Login = () => {
     }
 
   return (
-    <div className='container justify-content-center flex-wrap d-flex'>
+    <div className='justify-content-center w-50 justify-content-center mx-auto mt-5'>
         <Card className="mt-5 mx-3 p-3 px-5 shadow">
             <Card.Body>
                 <Row className="mb-2">
@@ -39,19 +53,26 @@ const Login = () => {
                     <FormGroup className="mb-4">
                         <Form.Control
                             type="email"
+                            ref={emailRef}
                             required
                             placeholder="Ingresar email"
                             onChange={handleEmailChange}
-                            value={email} />
+                            value={email} 
+                            className={errors.email  && " border border-danger"}
+                            />
+                            {errors.email && <p className="text-danger">El email es requerido</p>}
                     </FormGroup>
                     <FormGroup className="mb-4">
                         <Form.Control
                             type="password"
+                            ref={passwordRef}
                             required
                             placeholder="Ingresar contraseña"
                             onChange={handlePasswordChange}
                             value={password}
+                            className={errors.password  && " border border-danger"}
                         />
+                        <div className='container'>{errors.password && <p className="text-danger">La contraseña debe tener al menos 7 caracteres</p>}</div>
                     </FormGroup>
                     <Row>
                         <Col />
