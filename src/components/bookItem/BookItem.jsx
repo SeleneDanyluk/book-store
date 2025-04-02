@@ -1,29 +1,48 @@
 import { useState } from "react";
 import { Card, Button } from "react-bootstrap";
+import DeleteModal from "../../ui/modal/DeleteModal";
 
-const BookItem = ({ bookTitle, author, rating, pages, imageUrl }) => {
+const BookItem = ({ id, bookTitle, author, rating, pages, imageUrl, onDeleteBook }) => {
 
-    const [newTitle, setNewTitle] = useState(bookTitle);
+    const [modal, setModal] = useState({ show: false, title: "", bookId: null });
 
-    const handleChangeTitle = () => {
-        setNewTitle("Hola, cambiamos el titulo");
-    }
+    const handleDeleteFromModal = () => {
+        onDeleteBook(modal.bookId);
+        setModal({ show: false, title: "", bookId: null });
+    };
+
+    const handleHideModal = () => {
+        setModal({ show: false, title: "", bookId: null });
+    };
+
+    const handleClick = () => {
+        setModal({ show: true, title: bookTitle, bookId: id });
+    };
 
     return (
-        <Card style={{ width: "22rem" }}>
-            <Card.Img
-                height={400}
-                variant="top"
-                src={imageUrl !== "" ? imageUrl : "https://bit.ly/47NylZk"}
+        <div>
+            <DeleteModal
+                headerText="Eliminar libro"
+                onHide={handleHideModal}
+                onDelete={handleDeleteFromModal}
+                entity={modal.title}
+                show={modal.show}
             />
-            <Card.Body> 
-                <Card.Title>{newTitle}</Card.Title>
-                <Card.Subtitle>{author}</Card.Subtitle>
-                <div>{rating} estrellas</div>
-                <p>{pages} páginas</p>
-                <Button onClick={handleChangeTitle}>Actualizar título!</Button>
-            </Card.Body>
-        </Card>
+            <Card style={{ width: "22rem" }}>
+                <Card.Img
+                    height={400}
+                    variant="top"
+                    src={imageUrl !== "" ? imageUrl : "https://bit.ly/47NylZk"}
+                />
+                <Card.Body> 
+                    <Card.Title>{bookTitle}</Card.Title>
+                    <Card.Subtitle>{author}</Card.Subtitle>
+                    <div>{rating} estrellas</div>
+                    <p>{pages} páginas</p>
+                    <Button onClick={handleClick} variant="danger">Eliminar libro</Button>
+                </Card.Body>
+            </Card>
+        </div>
     );
 };
 

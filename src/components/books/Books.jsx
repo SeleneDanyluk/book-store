@@ -12,7 +12,12 @@ const Books = ({ books }) => {
         setSearch(value);
     };
 
-    const filteredBooks = books
+    const handleDeleteBook = (bookId) => {
+        alert(`El libro con id ${bookId} fue eliminado`);
+    };
+    
+
+    let filteredBooks = books
     .filter(book => search ? (book.bookTitle.toLowerCase().includes(search.toLowerCase()) || book.bookAuthor.toLowerCase().includes(search.toLowerCase())) : book)
     .map(((book) => (
         <BookItem
@@ -23,6 +28,7 @@ const Books = ({ books }) => {
             rating={book.bookRating}
             pages={book.pageCount}
             imageUrl={book.imageUrl}
+            onDeleteBook={handleDeleteBook}
         />
     )));
 
