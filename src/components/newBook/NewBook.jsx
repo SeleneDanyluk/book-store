@@ -1,5 +1,6 @@
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { useState } from "react";
+import { Navigate, useNavigate } from 'react-router'
 
 const NewBook = ({ onBookAdded }) => {
 
@@ -9,6 +10,11 @@ const NewBook = ({ onBookAdded }) => {
     const [pageCount, setPageCount] = useState("");
     const [imageUrl, setImageUrl] = useState('');
     const [available, setAvailable] = useState(false);
+    const navigate = useNavigate();
+
+    const handleBackToDashboard = () => {
+        navigate("/")
+    }
 
     const handleChangeTitle = (event) => {
         setTitle(event.target.value);
@@ -134,6 +140,8 @@ const NewBook = ({ onBookAdded }) => {
                             <Button variant="primary" type="submit">
                                 Agregar lectura
                             </Button>
+                            <br></br>
+                            <Button variant="secondary" onClick={handleBackToDashboard}>Volver</Button>
                         </Col>
                     </Row>
                 </Form>
