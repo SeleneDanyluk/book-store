@@ -1,6 +1,11 @@
-import React, { useRef } from 'react'
+import React, { useRef, useContext } from 'react'
 import { Button, Card, Col, Form, FormGroup, Row } from "react-bootstrap";
 import { useState } from "react";
+import { useAuth } from '../../hooks/useAuth';
+import { UserContext } from '../../context/UserContext';
+import Cookies from 'js-cookie';
+import { jwtDecode } from "jwt-decode";
+import { Navigate, useNavigate } from 'react-router';
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -11,6 +16,9 @@ const Login = () => {
     });
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
+    const [PostData, loading, error] = useAuth({ consulta: "Authentication/authenticate" });
+    const { handleUser, setIsLoggedIn } = useContext(UserContext);
+    const navigate = useNavigate();
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -22,8 +30,9 @@ const Login = () => {
         setErrors({ ...errors, password: false });
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+    
         if (!emailRef.current.value.length) {
             setErrors({ ...errors, email: true });
             alert("El email es requerido");
@@ -35,12 +44,34 @@ const Login = () => {
             passwordRef.current.focus();
             return;
         }
-
-        alert(`El email ingresado es: ${email} y el password es ${password}`);
-        setEmail("");
-        setPassword("");
-        setErrors({ email: false, password: false });
-    }
+    
+        const userData = { email, password };
+    
+        try {
+            const responseData = await PostData(userData);
+    
+            if (responseData?.token) {
+                const token = responseData.token;
+                Cookies.set("token", token, { expires: 7 });
+    
+                const decoded = jwtDecode(token);
+    
+                handleUser({
+                    id: decoded.sub,
+                    role: decoded.role,
+                    name: decoded.given_name,
+                    email: decoded.email || decoded.given_name
+                });
+    
+                setIsLoggedIn(true);
+                setEmail("");
+                setPassword("");
+                navigate("/");
+            }
+        } catch (error) {
+            console.error("Error al enviar los datos:", error);
+        }
+    };
 
   return (
     <div className='justify-content-center w-50 justify-content-center mx-auto mt-5'>

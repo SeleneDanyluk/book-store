@@ -1,31 +1,28 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useState } from 'react'
 import booksInitial from '../data/BooksInitials'
 import Books from '../components/books/Books'
-import NewBook from '../components/newBook/NewBook'
+import { Button } from 'react-bootstrap'
+import { Navigate, useNavigate } from 'react-router'
+import { UserContext } from '../context/UserContext'
 
 const Dashboard = () => {
-    const [books, setBooks] = useState(booksInitial);
 
-    const handleBookAdded = (enteredBook) => {
-        const newBook = {
-            ...enteredBook,
-            id: Math.random().toString(),
-            bookRating: Array(enteredBook.bookRating).fill("*"),
-        };
+    const navigate = useNavigate();
+    const {handleLogOut, isLoggedIn, userLoged } = useContext(UserContext);
 
-        setBooks((prevBooks) => {
-            return [...prevBooks, newBook];
-        });
+    const handleNavigateToNewBook = () => {
+        navigate("/agregar-libro")
     };
+
     return (
         <div>
             <h1>Books!</h1>
-            <h2>Quiero leer libros!</h2>
-            <NewBook onBookAdded={handleBookAdded} onDeletedBook={setBooks} />
-            <Books
-                books={books}
-            />
+            {isLoggedIn && <h2>Bienvenido/a {userLoged.name}</h2>}
+            {userLoged.role == "admin" && <Button onClick={handleNavigateToNewBook}>Agregar libro</Button>}
+            {isLoggedIn && <Button onClick={handleLogOut}>Cerrar sesión</Button>}
+            <Books/>
+           
         </div>
     )
 }
